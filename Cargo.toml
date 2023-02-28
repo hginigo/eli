@@ -1,0 +1,14 @@
+[package]
+name = "eli"
+version = "0.1.0"
+author = "Hugo Iñigo <hginigo5@gmail.com>"
+about = "Cli wrapper for Elhuyar Hiztegia"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = {version = "4.1.6", features = ["derive", "cargo"]}
+
+reqwest = {version = "0.11", features = ["blocking"]}
+scraper = "0.12.0"
