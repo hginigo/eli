@@ -1,6 +1,5 @@
-use crate::parser::{Translation, Lang};
-use clap::{
-    Parser, arg, command, ArgAction};
+use crate::parser::{Lang, Translation};
+use clap::{arg, command, ArgAction, Parser};
 
 // enum ArgError {
 //     UnknownArg(String),
@@ -29,31 +28,31 @@ pub fn parse_args() -> Vec<Translation> {
             "eu" => {
                 from = Lang::Eu;
                 to = Lang::Es;
-            },
+            }
             "es" => {
                 from = Lang::Es;
                 to = Lang::Eu;
-            },
+            }
             "en" => {
                 from = Lang::En;
                 to = Lang::Eu;
-            },
+            }
             "fr" => {
                 from = Lang::Fr;
                 to = Lang::Eu;
-            },
+            }
             _ => unreachable!(),
         }
     }
 
-    let translations: Vec<Translation> = cli.term
+    let translations: Vec<Translation> = cli
+        .term
         .iter()
         .map(|t| Translation::new(from, to, t.to_string()))
         .collect();
 
     translations
 }
-
 
 // fn parse_arg() -> Result<Vec<Translation>, ArgError> {
 //     unimplemented!();

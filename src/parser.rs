@@ -1,6 +1,6 @@
-use scraper::{ElementRef, Selector, Html};
-use std::fmt;
 use colored::Colorize;
+use scraper::{ElementRef, Html, Selector};
+use std::fmt;
 
 pub trait Parse {
     fn parse(er: &ElementRef) -> Self;
@@ -16,12 +16,16 @@ pub enum Lang {
 
 impl fmt::Display for Lang {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", match self {
-            Lang::Eu => "eu",
-            Lang::Es => "es",
-            Lang::En => "en",
-            Lang::Fr => "fr",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                Lang::Eu => "eu",
+                Lang::Es => "es",
+                Lang::En => "en",
+                Lang::Fr => "fr",
+            }
+        )
     }
 }
 
@@ -50,10 +54,14 @@ impl Translation {
     }
 
     pub fn parse(&mut self, doc: &Html) -> Result<(), ()> {
-        let fmt_str = format!("ul.hizkuntzaren_arabera.hizkuntza-{}_{}>li", self.from, self.to);
+        let fmt_str = format!(
+            "ul.hizkuntzaren_arabera.hizkuntza-{}_{}>li",
+            self.from, self.to
+        );
         let entry_selector = scraper::Selector::parse(&fmt_str).unwrap();
 
-        let entry_list: Vec<Entry> = doc.select(&entry_selector)
+        let entry_list: Vec<Entry> = doc
+            .select(&entry_selector)
             .map(|mut x| Entry::parse(&mut x))
             .collect();
 
@@ -68,10 +76,12 @@ impl Translation {
 
 impl fmt::Display for Translation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "{}\n{} > {}",
-                 self.word.bold(),
-                 format!("{}", self.from).blue(),
-                 format!("{}", self.to).blue(),
+        writeln!(
+            f,
+            "{}\n{} > {}",
+            self.word.bold(),
+            format!("{}", self.from).blue(),
+            format!("{}", self.to).blue(),
         )?;
 
         for (mut num, entry) in self.entry_list.iter().enumerate() {
@@ -110,7 +120,7 @@ impl Parse for Entry {
     fn parse(er: &ElementRef) -> Entry {
         let word_list = parse_word_list(&er);
         let example_list = parse_example_list(&er);
-        
+
         Entry {
             kind: String::default(),
             word_list,
@@ -145,23 +155,20 @@ impl Parse for Example {
 
         let translation_offs = translation
             .find(pattern)
-            .unwrap_or(translation.len()-pattern.len());
+            .unwrap_or(translation.len() - pattern.len());
 
-        translation.drain(..translation_offs+pattern.len());
+        translation.drain(..translation_offs + pattern.len());
 
         Example {
             sentence,
             translation,
         }
     }
-
 }
 
 fn parse_word_list(er: &ElementRef) -> Vec<String> {
     let word_selector = Selector::parse("p.lehena>span.remark, a>*").unwrap();
-    let word_list: Vec<String> = er.select(&word_selector)
-        .map(|x| x.inner_html())
-        .collect();
+    let word_list: Vec<String> = er.select(&word_selector).map(|x| x.inner_html()).collect();
 
     word_list
 }
@@ -175,4 +182,3 @@ fn parse_example_list(er: &ElementRef) -> Vec<Example> {
 
     example_list
 }
-
