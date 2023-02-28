@@ -1,5 +1,6 @@
 use scraper::{ElementRef, Selector, Html};
 use std::fmt;
+use colored::Colorize;
 
 pub trait Parse {
     fn parse(er: &ElementRef) -> Self;
@@ -48,23 +49,29 @@ impl Translation {
         }
     }
 
-    pub fn parse(&mut self, doc: &Html) -> () {
+    pub fn parse(&mut self, doc: &Html) -> Result<(), ()> {
         let fmt_str = format!("ul.hizkuntzaren_arabera.hizkuntza-{}_{}>li", self.from, self.to);
         let entry_selector = scraper::Selector::parse(&fmt_str).unwrap();
 
-        let entry_list = doc.select(&entry_selector)
+        let entry_list: Vec<Entry> = doc.select(&entry_selector)
             .map(|mut x| Entry::parse(&mut x))
             .collect();
 
-        self.entry_list = entry_list;
+        if entry_list.is_empty() {
+            Err(())
+        } else {
+            self.entry_list = entry_list;
+            Ok(())
+        }
     }
 }
+
 impl fmt::Display for Translation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "{}\n{} > {}",
-               self.word,
-               self.from,
-               self.to
+                 self.word.bold(),
+                 format!("{}", self.from).blue(),
+                 format!("{}", self.to).blue(),
         )?;
 
         for (mut num, entry) in self.entry_list.iter().enumerate() {
@@ -85,9 +92,12 @@ pub struct Entry {
 impl fmt::Display for Entry {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.kind)?;
-        for word in self.word_list.iter().intersperse(&", ".to_owned()) {
-            write!(f, "{word}")?;
-        }
+        self.word_list
+            .iter()
+            .map(|w| w.blue())
+            .intersperse(", ".clear())
+            .for_each(|word| write!(f, "{word}").unwrap());
+
         writeln!(f)?;
         for example in self.example_list.iter() {
             write!(f, "{example}")?;
@@ -117,7 +127,7 @@ pub struct Example {
 
 impl fmt::Display for Example {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let sentence = &self.sentence;
+        let sentence = &self.sentence.italic();
         let translation = &self.translation;
         writeln!(f, "   {sentence}: {translation}")
     }

@@ -3,6 +3,7 @@ mod parser;
 mod args;
 
 use args::*;
+use colored::Colorize;
 
 fn main() {
     let mut translations = parse_args();
@@ -17,9 +18,14 @@ fn main() {
             .unwrap()
             .text()
             .unwrap();
-        let document = scraper::Html::parse_document(&response);
-        translation.parse(&document);
         
-        print!("{}", translation);
+        let document = scraper::Html::parse_document(&response);
+        match translation.parse(&document) {
+            Ok(_) => print!("{}", translation),
+            Err(_) => eprintln!("{}",
+                                format!("No entries for `{}' found.",
+                                        translation.word).red()),
+        }
+        
     }
 }
