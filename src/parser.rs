@@ -1,12 +1,13 @@
 use colored::Colorize;
 use scraper::{ElementRef, Html, Selector};
 use std::fmt;
+use serde::{Serialize, Deserialize};
 
 pub trait Parse {
     fn parse(er: &ElementRef) -> Self;
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub enum Lang {
     Eu,
     Es,
@@ -35,7 +36,7 @@ impl fmt::Debug for Lang {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Translation {
     pub from: Lang,
     pub to: Lang,
@@ -92,7 +93,7 @@ impl fmt::Display for Translation {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Entry {
     kind: String,
     word_list: Vec<String>,
@@ -129,7 +130,7 @@ impl Parse for Entry {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Example {
     sentence: String,
     translation: String,

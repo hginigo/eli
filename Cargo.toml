@@ -1,6 +1,6 @@
 [package]
 name = "eli"
-version = "0.1.0"
+version = "0.2.0"
 author = "Hugo Iñigo <hginigo5@gmail.com>"
 about = "Cli wrapper for Elhuyar Hiztegia"
 edition = "2021"
@@ -14,3 +14,6 @@ indicatif = "0.17.3"
 
 reqwest = {version = "0.11", features = ["blocking"]}
 scraper = "0.12.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+syn = "1.0.104"
