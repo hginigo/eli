@@ -28,20 +28,19 @@ fn main() {
         .unwrap();
 
         let document = scraper::Html::parse_document(&response);
-        
+
         // Set the cursor properly to hide progress bar
         eprint!("\x1b[1G\x1b[0K");
-        
+
         match translation.parse(&document) {
             Ok(_) => {
                 if config.json {
-                    let json = serde_json::to_string_pretty(translation)
-                        .unwrap();
+                    let json = serde_json::to_string_pretty(translation).unwrap();
                     println!("{}", json)
                 } else {
                     print!("{}", translation)
                 }
-            },
+            }
             Err(_) => eprintln!(
                 "{}",
                 format!("No entries for `{}' found.", translation.word).red()

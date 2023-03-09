@@ -57,6 +57,5 @@ pub fn parse_args() -> (Config, Vec<Translation>) {
         .map(|t| Translation::new(from, to, t.to_owned()))
         .collect();
 
-
     (cfg, translations)
 }
